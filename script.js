@@ -1,205 +1,159 @@
-/* ============================================================
-   🔥 FIREBASE INITIALIZATION (your config inserted)
-============================================================ */
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getDatabase, ref, set, push, onChildAdded, remove, update, get } 
-from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+import {
+    getDatabase,
+    ref,
+    push,
+    onValue,
+    remove,
+    set,
+    get
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyB0R_sX_3-iHTIdR-cV6XnBkK-dCi15ny0",
     authDomain: "project-ano.firebaseapp.com",
+    databaseURL: "https://project-ano-default-rtdb.firebaseio.com/",
     projectId: "project-ano",
     storageBucket: "project-ano.firebasestorage.app",
     messagingSenderId: "871392286002",
     appId: "1:871392286002:web:614a92e162f4f8a42e332b",
-    measurementId: "G-TECFSQTKB4",
-    databaseURL: "https://project-ano-default-rtdb.firebaseio.com/"
+    measurementId: "G-TECFSQTKB4"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* ============================================================
-   🟢 GLOBALS
-============================================================ */
+// ELEMENTS
+const loginPage = document.getElementById("loginPage");
+const adminLoginPage = document.getElementById("adminLoginPage");
+const chatPage = document.getElementById("chatPage");
+const adminPanel = document.getElementById("adminPanel");
 
-let currentUser = localStorage.getItem("chatUser") || null;
+const usernameInput = document.getElementById("usernameInput");
+const passwordInput = document.getElementById("passwordInput");
+const loginBtn = document.getElementById("loginBtn");
 
-const bannedRef = ref(db, "bannedUsers/");
-const messagesRef = ref(db, "messages/");
+const adminLoginOpen = document.getElementById("adminLoginOpen");
+const backToUserLogin = document.getElementById("backToUserLogin");
 
-/* ============================================================
-   🎭 PAGE IDENTIFIER
-============================================================ */
+const adminUser = document.getElementById("adminUser");
+const adminPass = document.getElementById("adminPass");
+const adminLoginBtn = document.getElementById("adminLoginBtn");
 
-const isLoginPage = document.getElementById("loginBtn") !== null;
-const isChatPage  = document.getElementById("sendBtn") !== null;
-const isAdminPage = document.getElementById("adminLoginBtn") !== null;
+const messagesDiv = document.getElementById("messages");
+const messageInput = document.getElementById("messageInput");
+const sendBtn = document.getElementById("sendBtn");
 
-/* ============================================================
-   🔐 USER LOGIN LOGIC (index.html)
-============================================================ */
+const logoutBtn = document.getElementById("logoutBtn");
+const logoutAdminBtn = document.getElementById("logoutAdminBtn");
 
-if (isLoginPage) {
-    document.getElementById("loginBtn").onclick = async () => {
-        
-        let user = document.getElementById("usernameInput").value.trim();
-        let pass = document.getElementById("passwordInput").value.trim();
+const banBtn = document.getElementById("banBtn");
+const unbanBtn = document.getElementById("unbanBtn");
+const deleteAllBtn = document.getElementById("deleteAllBtn");
 
-        if (!user || !pass) {
-            alert("Enter username & password!");
-            return;
-        }
+const banUserInput = document.getElementById("banUserInput");
+const unbanUserInput = document.getElementById("unbanUserInput");
 
-        // CHECK BANNED USERS
-        const banData = await get(bannedRef);
-        if (banData.exists()) {
-            const banned = banData.val();
-            if (banned[user]) {
-                alert("You are BANNED by Admin.");
-                return;
-            }
-        }
+let currentUser = null;
 
-        localStorage.setItem("chatUser", user);
+// USER LOGIN
+loginBtn.onclick = () => {
+    const user = usernameInput.value.trim();
+    const pass = passwordInput.value.trim();
 
-        window.location = "chat.html";
-    };
-}
+    if (!user || !pass) return alert("Enter username & password");
 
-/* ============================================================
-   💬 CHAT PAGE (chat.html)
-============================================================ */
+    get(ref(db, "banned/" + user)).then(s => {
+        if (s.exists()) return alert("You are banned");
 
-if (isChatPage) {
+        currentUser = user;
+        loginPage.classList.add("hidden");
+        chatPage.classList.remove("hidden");
+    });
+};
 
-    // not logged?
-    if (!currentUser) window.location = "index.html";
+// ADMIN LOGIN NAVIGATION
+adminLoginOpen.onclick = () => {
+    loginPage.classList.add("hidden");
+    adminLoginPage.classList.remove("hidden");
+};
 
-    const msgBox = document.getElementById("messages");
-    const sendBtn = document.getElementById("sendBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const input = document.getElementById("messageInput");
+backToUserLogin.onclick = () => {
+    adminLoginPage.classList.add("hidden");
+    loginPage.classList.remove("hidden");
+};
 
-    // SEND MESSAGE
-    sendBtn.onclick = () => {
-        let txt = input.value.trim();
-        if (!txt) return;
+// ADMIN LOGIN
+adminLoginBtn.onclick = () => {
+    if (adminUser.value === "zerohex" && adminPass.value === "badatom2556") {
+        adminLoginPage.classList.add("hidden");
+        adminPanel.classList.remove("hidden");
+    } else {
+        alert("Wrong Admin Login");
+    }
+};
 
-        push(messagesRef, {
-            sender: currentUser,
-            text: txt,
-            time: Date.now()
-        });
+// SEND MESSAGE
+sendBtn.onclick = () => {
+    const msg = messageInput.value.trim();
+    if (!msg) return;
 
-        input.value = "";
-    };
-
-    // DISPLAY MESSAGES
-    onChildAdded(messagesRef, snap => {
-        const m = snap.val();
-
-        let div = document.createElement("div");
-        div.className = "message hackerFade";
-
-        div.innerHTML = `
-            <b>${m.sender}:</b> ${m.text}
-        `;
-
-        msgBox.appendChild(div);
-        msgBox.scrollTop = msgBox.scrollHeight;
+    push(ref(db, "messages/"), {
+        user: currentUser,
+        text: msg,
+        time: Date.now()
     });
 
-    // LOGOUT
-    logoutBtn.onclick = () => {
-        localStorage.removeItem("chatUser");
-        window.location = "index.html";
-    };
-}
+    messageInput.value = "";
+};
 
-/* ============================================================
-   🔐 ADMIN LOGIN + PANEL (admin.html)
-============================================================ */
+// LOAD MESSAGES LIVE
+onValue(ref(db, "messages/"), snap => {
+    messagesDiv.innerHTML = "";
+    if (!snap.exists()) return;
 
-if (isAdminPage) {
-    const adminLoginBtn = document.getElementById("adminLoginBtn");
-    const adminPanel = document.getElementById("adminPanel");
-    const banUserBtn = document.getElementById("banUserBtn");
-    const unbanUserBtn = document.getElementById("unbanUserBtn");
-    const deleteMsgBtn = document.getElementById("deleteMsgBtn");
-    const deleteAllBtn = document.getElementById("deleteAllBtn");
-    const broadcastBtn = document.getElementById("broadcastBtn");
+    snap.forEach(c => {
+        const m = c.val();
+        const div = document.createElement("div");
+        div.classList.add("message");
+        div.innerHTML = `<b>${m.user}</b>: ${m.text}`;
+        messagesDiv.appendChild(div);
+    });
 
-    // ADMIN LOGIN
-    adminLoginBtn.onclick = () => {
-        let user = document.getElementById("adminUser").value.trim();
-        let pass = document.getElementById("adminPass").value.trim();
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+});
 
-        if (user === "zerohex" && pass === "badatom2556") {
-            document.getElementById("adminLogin").classList.add("hidden");
-            adminPanel.classList.remove("hidden");
-        } else {
-            alert("Wrong admin credentials.");
-        }
-    };
+// BAN USER
+banBtn.onclick = () => {
+    const user = banUserInput.value.trim();
+    if (!user) return;
+    set(ref(db, "banned/" + user), true);
+    alert("User Banned");
+};
 
-    /* ========== ADMIN FEATURES ========== */
+// UNBAN USER
+unbanBtn.onclick = () => {
+    const user = unbanUserInput.value.trim();
+    if (!user) return;
+    remove(ref(db, "banned/" + user));
+    alert("User Unbanned");
+};
 
-    // BAN USER
-    banUserBtn.onclick = async () => {
-        let user = prompt("Enter username to BAN:");
-        if (!user) return;
+// DELETE ALL MESSAGES
+deleteAllBtn.onclick = () => {
+    remove(ref(db, "messages/"));
+    alert("All Messages Deleted");
+};
 
-        await set(ref(db, "bannedUsers/" + user), true);
-        alert(user + " banned!");
-    };
+// LOGOUT USER
+logoutBtn.onclick = () => {
+    currentUser = null;
+    chatPage.classList.add("hidden");
+    loginPage.classList.remove("hidden");
+};
 
-    // UNBAN USER
-    unbanUserBtn.onclick = async () => {
-        let user = prompt("Enter username to UNBAN:");
-        if (!user) return;
-
-        await remove(ref(db, "bannedUsers/" + user));
-        alert(user + " unbanned!");
-    };
-
-    // DELETE SPECIFIC MESSAGE
-    deleteMsgBtn.onclick = async () => {
-        let id = prompt("Enter message ID to delete:");
-        if (!id) return;
-
-        await remove(ref(db, "messages/" + id));
-        alert("Message deleted!");
-    };
-
-    // DELETE ALL MESSAGES
-    deleteAllBtn.onclick = async () => {
-        if (confirm("Delete ALL messages?")) {
-            await remove(messagesRef);
-            alert("All messages deleted!");
-        }
-    };
-
-    // BROADCAST
-    broadcastBtn.onclick = () => {
-        let msg = prompt("Enter broadcast message:");
-        if (!msg) return;
-
-        push(messagesRef, {
-            sender: "ADMIN",
-            text: "[BROADCAST] " + msg,
-            time: Date.now()
-        });
-
-        alert("Broadcast sent!");
-    };
-}
-
-/* ============================================================
-   🌐 HACKER EFFECTS (animations)
-============================================================ */
-
-setInterval(() => {
-    document.body.style.filter = "hue-rotate(" + (Math.random() * 10) + "deg)";
-}, 200);
+// LOGOUT ADMIN
+logoutAdminBtn.onclick = () => {
+    adminPanel.classList.add("hidden");
+    loginPage.classList.remove("hidden");
+};
