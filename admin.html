@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ADMIN LOGIN SCREEN -->
+<div id="adminLogin" class="centerBox">
+    <h2>Admin Login</h2>
+
+    <input type="text" id="adminUser" placeholder="Admin Username">
+    <input type="password" id="adminPass" placeholder="Admin Password">
+
+    <button id="adminLoginBtn">Login</button>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel" class="adminBox hidden">
+    <h2>Admin Control Panel</h2>
+
+    <button id="banUserBtn" class="adminBtn">Ban User</button>
+    <button id="unbanUserBtn" class="adminBtn">Unban User</button>
+    <button id="deleteMsgBtn" class="adminBtn">Delete Specific Message</button>
+    <button id="deleteAllBtn" class="adminBtn">Delete All Messages</button>
+    <button id="broadcastBtn" class="adminBtn">Broadcast Message</button>
+
+    <button class="closeBtn" onclick="window.location='index.html'">Logout</button>
+</div>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>
