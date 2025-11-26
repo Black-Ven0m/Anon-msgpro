@@ -1,24 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Login | ZeroHEX Chat</title>
+    <meta charset="UTF-8">
+    <title>Anonymous Chat</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="box">
-        <h2>🔐 User Login</h2>
+<!-- USER LOGIN PAGE -->
+<div id="loginPage" class="page fade">
+    <h1 class="logo">ANONYMOUS CHAT</h1>
+    <input id="usernameInput" placeholder="Username">
+    <input id="passwordInput" type="password" placeholder="Password">
+    <button id="loginBtn">Login</button>
 
-        <input id="usernameInput" placeholder="Enter Username">
-        <input id="passwordInput" type="password" placeholder="Password">
+    <button id="adminLoginOpen" class="adminButton">Admin Login</button>
+</div>
 
-        <button id="loginBtn">Login</button>
+<!-- ADMIN LOGIN PAGE -->
+<div id="adminLoginPage" class="page hidden fade">
+    <h1 class="logo">ADMIN PANEL LOGIN</h1>
+    <input id="adminUser" placeholder="Admin Username">
+    <input id="adminPass" type="password" placeholder="Admin Password">
+    <button id="adminLoginBtn">Login</button>
 
-        <br><br>
+    <button id="backToUserLogin" class="backBtn">Back</button>
+</div>
 
-        <button onclick="window.location='admin.html'">Admin Login</button>
+<!-- CHAT PAGE -->
+<div id="chatPage" class="page hidden fade chatBox">
+    <h1 class="chatHeader">Chat Room</h1>
+
+    <div id="messages" class="messages"></div>
+
+    <div class="msgArea">
+        <input id="messageInput" placeholder="Type a message...">
+        <button id="sendBtn">Send</button>
     </div>
 
-    <script type="module" src="script.js"></script>
+    <button id="logoutBtn" class="logoutBtn">Logout</button>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel" class="page hidden fade adminPanel">
+    <h1>ADMIN PANEL</h1>
+
+    <h3>Ban User</h3>
+    <input id="banUserInput" placeholder="Username">
+    <button id="banBtn">Ban</button>
+
+    <h3>Unban User</h3>
+    <input id="unbanUserInput" placeholder="Username">
+    <button id="unbanBtn">Unban</button>
+
+    <h3>Delete All Messages</h3>
+    <button id="deleteAllBtn" class="danger">DELETE ALL</button>
+
+    <button id="logoutAdminBtn" class="logoutBtn">Logout Admin</button>
+</div>
+
+<script type="module" src="script.js"></script>
+
 </body>
 </html>
