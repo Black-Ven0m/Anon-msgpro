@@ -1,172 +1,111 @@
-/* ==================================================
-   GLOBAL HACKER MATRIX BACKGROUND
-================================================== */
 body {
     margin: 0;
-    padding: 0;
-    font-family: 'Courier New', monospace;
+    font-family: monospace;
     background: black;
-    color: #00ff9d;
+    color: #0f0;
     overflow-x: hidden;
-    animation: bgPulse 5s infinite alternate;
 }
 
-@keyframes bgPulse {
-    0% { background-color: #000; }
-    100% { background-color: #020f0a; }
+.page {
+    text-align: center;
+    padding-top: 60px;
 }
 
-/* ==================================================
-   MATRIX RAIN EFFECT
-================================================== */
-body::before {
-    content: "010101110101001101010";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    color: rgba(0,255,100,0.1);
-    font-size: 18px;
-    line-height: 18px;
-    overflow: hidden;
-    pointer-events: none;
-    animation: matrixRain 20s linear infinite;
+.hidden {
+    display: none;
 }
 
-@keyframes matrixRain {
-    0% { transform: translateY(-100%); }
-    100% { transform: translateY(100%); }
+.logo {
+    font-size: 32px;
+    margin-bottom: 25px;
+    text-shadow: 0 0 10px #0f0;
 }
 
-/* ==================================================
-   CENTERED BOX STYLE (LOGIN, ADMIN)
-================================================== */
-.box {
-    width: 350px;
-    margin: 120px auto;
-    padding: 25px;
-    border: 2px solid #00ffcc;
-    border-radius: 10px;
-    background: rgba(0, 40, 20, 0.4);
-    backdrop-filter: blur(6px);
-    animation: fadeUp 1.3s ease;
-    box-shadow: 0 0 20px #00ffbf;
-}
-
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateY(25px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-input {
-    width: 100%;
-    padding: 12px;
-    background: #001a0f;
-    border: 1px solid #00ffaa;
-    color: #00ffbf;
-    margin: 8px 0;
-    border-radius: 5px;
-    outline: none;
-    box-shadow: 0 0 10px #004f39 inset;
-    transition: 0.3s;
-}
-
-input:focus {
-    border-color: #00ffe1;
-    box-shadow: 0 0 20px #00ffe1 inset;
-}
-
-/* ==================================================
-   BUTTON STYLES WITH GLITCH
-================================================== */
-button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
+input, button {
+    display: block;
+    margin: 12px auto;
+    padding: 10px 15px;
+    width: 70%;
+    border: 2px solid #0f0;
     background: black;
-    color: #00ffcc;
-    border: 2px solid #00ffcc;
-    border-radius: 5px;
-    font-weight: bold;
+    color: #0f0;
+    font-size: 18px;
+}
+
+button {
     cursor: pointer;
-    position: relative;
-    overflow: hidden;
     transition: 0.2s;
 }
 
 button:hover {
-    box-shadow: 0 0 18px #00ffaa;
+    background: #0f0;
+    color: black;
 }
 
-button::before {
-    content: "";
-    position: absolute;
-    top: -4px; left: -4px;
-    width: calc(100% + 8px);
-    height: calc(100% + 8px);
-    border: 2px dashed #00ffcc;
-    opacity: 0;
-    animation: glitch 1.2s infinite;
+.adminButton {
+    margin-top: 20px;
+    border-color: cyan;
+    color: cyan;
 }
 
-@keyframes glitch {
-    0% { opacity: 0; }
-    50% { opacity: 1; transform: translate(3px, -3px); }
-    100% { opacity: 0; }
+.backBtn {
+    color: yellow;
+    border-color: yellow;
 }
 
-/* ==================================================
-   CHAT PAGE
-================================================== */
-.chat-container {
+.chatBox {
+    padding-bottom: 120px;
+}
+
+.chatHeader {
+    font-size: 28px;
+    text-shadow: 0 0 5px #0f0;
+}
+
+.messages {
+    height: 400px;
     width: 90%;
-    margin: 40px auto;
-    padding: 20px;
-    background: rgba(0, 20, 10, 0.6);
-    border: 2px solid #00ffcc;
-    border-radius: 10px;
-    box-shadow: 0 0 20px #00ffbf;
-    animation: fadeUp 1.5s ease;
-}
-
-#messages {
-    height: 65vh;
-    overflow-y: auto;
+    margin: auto;
+    border: 2px solid #0f0;
     padding: 10px;
-    border: 1px solid #00ffcc;
-    background: rgba(0, 40, 20, 0.3);
-    box-shadow: inset 0 0 15px #00664a;
+    overflow-y: auto;
 }
 
 .message {
     margin: 10px 0;
+    background: rgba(0,255,0,0.1);
     padding: 8px;
-    border-left: 3px solid #00ffa6;
-    animation: msgFade 0.8s ease;
+    border-left: 3px solid #0f0;
 }
 
-@keyframes msgFade {
-    from { opacity: 0; transform: translateX(-15px); }
-    to   { opacity: 1; transform: translateX(0); }
+.msgArea {
+    position: fixed;
+    bottom: 20px;
+    width: 100%;
+    left: 0;
 }
 
-/* ==================================================
-   SEND AREA
-================================================== */
-.sendBox {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
+.msgArea input {
+    width: 70%;
+    display: inline-block;
 }
 
-.sendBox input {
-    flex: 1;
+.msgArea button {
+    width: 20%;
+    display: inline-block;
 }
 
-/* ==================================================
-   HIDE CLASS
-================================================== */
-.hidden {
-    display: none;
+.logoutBtn {
+    margin-top: 20px;
+    color: red;
+    border-color: red;
+}
+
+.adminPanel {
+    padding-top: 40px;
+}
+
+.danger {
+    background: red;
+    color: white;
 }
