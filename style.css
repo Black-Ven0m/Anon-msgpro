@@ -1,0 +1,165 @@
+body {
+    background: #000;
+    color: #0f0;
+    font-family: "Courier New", monospace;
+    margin: 0;
+}
+
+/* LOGIN BOX */
+.centerBox {
+    width: 280px;
+    margin: 120px auto;
+    background: rgba(0,255,0,0.05);
+    padding: 20px;
+    border: 1px solid #0f0;
+    text-align: center;
+}
+
+.centerBox input {
+    width: 90%;
+    padding: 10px;
+    margin: 8px;
+    background: black;
+    border: 1px solid #0f0;
+    color: #0f0;
+}
+
+.centerBox button {
+    width: 95%;
+    padding: 10px;
+    background: #0f0;
+    color: #000;
+    border: none;
+    cursor: pointer;
+}
+
+/* CHAT LAYOUT */
+#chatContainer {
+    display: none;
+    height: 100vh;
+    display: flex;
+}
+
+/* SIDEBAR */
+#sidebar {
+    width: 220px;
+    background: #050;
+    padding: 15px;
+    border-right: 2px solid #0f0;
+}
+
+#sidebar h3 {
+    margin-top: 0;
+}
+
+#userList div {
+    padding: 5px 0;
+}
+
+/* DANGER BTN */
+.danger {
+    margin-top: 20px;
+    width: 100%;
+    background: red;
+    color: white;
+    padding: 10px;
+    border: none;
+}
+
+/* MAIN CHAT */
+#mainChat {
+    flex: 1;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    text-align: center;
+    margin: 5px 0;
+    color: #0f0;
+}
+
+/* PINNED BOX */
+#pinnedBox div {
+    background: #222;
+    border-left: 4px solid yellow;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+/* MESSAGES */
+#messages {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid #0f0;
+    padding: 10px;
+}
+
+.message {
+    background: rgba(0,255,0,0.05);
+    padding: 8px;
+    margin: 6px 0;
+    border-bottom: 1px solid #0f0;
+}
+
+/* INPUT */
+#inputArea {
+    display: flex;
+    margin-top: 10px;
+}
+
+#messageInput {
+    flex: 1;
+    padding: 10px;
+    background: black;
+    border: 1px solid #0f0;
+    color: #0f0;
+}
+
+#sendBtn {
+    padding: 10px 20px;
+    background: #0f0;
+    color: black;
+    border: none;
+    cursor: pointer;
+}
+
+/* ADMIN PANEL BOX */
+.adminBox {
+    position: fixed;
+    width: 350px;
+    background: #020;
+    border: 2px solid #0f0;
+    top: 50px;
+    right: 50px;
+    padding: 20px;
+}
+
+.adminBtn {
+    width: 100%;
+    margin: 8px 0;
+    padding: 10px;
+    background: black;
+    color: #0f0;
+    border: 1px solid #0f0;
+}
+
+.closeBtn {
+    margin-top: 10px;
+    background: red;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    border: none;
+}
+
+/* HIDING CLASS */
+.hidden {
+    display: none;
+}
+
+/* GLITCH EFFECT */
+body.glitch {
+    filter: hue-rotate(90deg);
+}
