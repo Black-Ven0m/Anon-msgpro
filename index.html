@@ -1,26 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Anonymous Login</title>
+    <title>Login | ZeroHEX Chat</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="centerBox">
-    <h2>User Login</h2>
+    <div class="box">
+        <h2>🔐 User Login</h2>
 
-    <input type="text" id="usernameInput" placeholder="Enter Username">
-    <input type="password" id="passwordInput" placeholder="Enter Password">
+        <input id="usernameInput" placeholder="Enter Username">
+        <input id="passwordInput" type="password" placeholder="Password">
 
-    <button id="loginBtn">Login</button>
+        <button id="loginBtn">Login</button>
 
-    <hr>
+        <br><br>
 
-    <button onclick="window.location='admin.html'" class="adminLoginBtn">
-        Admin Login
-    </button>
-</div>
+        <button onclick="window.location='admin.html'">Admin Login</button>
+    </div>
 
-<script type="module" src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
