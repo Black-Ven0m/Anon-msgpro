@@ -1,63 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anonymous Chat</title>
+    <title>Anonymous Login</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- LOGIN SCREEN -->
-    <div id="loginScreen" class="centerBox">
-        <h2>Anonymous Login</h2>
-        <input type="text" id="usernameInput" placeholder="Enter Username">
-        <input type="password" id="passwordInput" placeholder="Enter Password">
-        <button id="loginBtn">Login</button>
-    </div>
+<div class="centerBox">
+    <h2>User Login</h2>
 
-    <!-- CHAT CONTAINER -->
-    <div id="chatContainer">
+    <input type="text" id="usernameInput" placeholder="Enter Username">
+    <input type="password" id="passwordInput" placeholder="Enter Password">
 
-        <!-- SIDEBAR -->
-        <div id="sidebar">
-            <h3>Online Users</h3>
-            <div id="userList"></div>
+    <button id="loginBtn">Login</button>
 
-            <button id="adminPanelBtn" class="hidden">Admin Panel</button>
-            <button id="logoutBtn" class="danger">Logout</button>
-        </div>
+    <hr>
 
-        <!-- MAIN CHAT AREA -->
-        <div id="mainChat">
-            <h2 class="title">Anonymous Global Chat</h2>
+    <button onclick="window.location='admin.html'" class="adminLoginBtn">
+        Admin Login
+    </button>
+</div>
 
-            <!-- PINNED -->
-            <div id="pinnedBox"></div>
-
-            <!-- MESSAGES -->
-            <div id="messages"></div>
-
-            <!-- INPUT SECTION -->
-            <div id="inputArea">
-                <input type="text" id="messageInput" placeholder="Type your message...">
-                <button id="sendBtn">Send</button>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- ADMIN PANEL -->
-    <div id="adminPanel" class="adminBox hidden">
-        <h2>🔐 Admin Panel</h2>
-
-        <button class="adminBtn" id="deleteAllBtn">Delete All Messages</button>
-        <button class="adminBtn" id="exportBtn">Export Messages</button>
-        <button class="adminBtn" id="broadcastBtn">Send Broadcast</button>
-        <button class="adminBtn" id="maintainBtn">Enable Read‑Only Mode</button>
-        <button class="closeBtn" id="closeAdmin">Close</button>
-    </div>
-
-    <script type="module" src="script.js"></script>
+<script type="module" src="script.js"></script>
 </body>
 </html>
