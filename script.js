@@ -1,14 +1,11 @@
-/* ============================================
-   🔥 BLOCK 1 — CORE ENGINE (Firebase + Chat)
-   ============================================ */
+/* ============================================================
+   🔥 FIREBASE INITIALIZATION (your config inserted)
+============================================================ */
 
-/* ========== FIREBASE IMPORTS ========== */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { 
-    getDatabase, ref, push, onChildAdded, remove 
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+import { getDatabase, ref, set, push, onChildAdded, remove, update, get } 
+from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
-/* ========== FIREBASE CONFIG — YOUR CONFIG ========== */
 const firebaseConfig = {
     apiKey: "AIzaSyB0R_sX_3-iHTIdR-cV6XnBkK-dCi15ny0",
     authDomain: "project-ano.firebaseapp.com",
@@ -20,247 +17,189 @@ const firebaseConfig = {
     databaseURL: "https://project-ano-default-rtdb.firebaseio.com/"
 };
 
-/* Init */
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* ========== GLOBAL VARIABLES ========== */
-let currentUser = localStorage.getItem("username") || "";
-let isAdmin = false;
+/* ============================================================
+   🟢 GLOBALS
+============================================================ */
 
-/* ========== ELEMENTS ========== */
-const loginBox = document.getElementById("login-container");
-const chatBox = document.getElementById("chat-container");
-const adminBadge = document.getElementById("admin-badge");
-const adminBtn = document.getElementById("adminPanelBtn");
-const messagesDiv = document.getElementById("messages");
+let currentUser = localStorage.getItem("chatUser") || null;
 
-/* ============================================
-   🔐 LOGIN SYSTEM
-   ============================================ */
-document.getElementById("loginBtn").addEventListener("click", () => {
-    let user = document.getElementById("username").value.trim();
-    let pass = document.getElementById("password").value.trim();
+const bannedRef = ref(db, "bannedUsers/");
+const messagesRef = ref(db, "messages/");
 
-    if (!user) return alert("Username required");
+/* ============================================================
+   🎭 PAGE IDENTIFIER
+============================================================ */
 
-    // ADMIN LOGIN
-    if (user === "zerohex" && pass === "badatom2556") {
-        isAdmin = true;
-        currentUser = "ADMIN";
-        localStorage.setItem("username", currentUser);
-    } else {
-        if (!pass) return alert("Password required (anything allowed)");
-        currentUser = user;
-        isAdmin = false;
-        localStorage.setItem("username", currentUser);
-    }
+const isLoginPage = document.getElementById("loginBtn") !== null;
+const isChatPage  = document.getElementById("sendBtn") !== null;
+const isAdminPage = document.getElementById("adminLoginBtn") !== null;
 
-    loginBox.style.display = "none";
-    chatBox.style.display = "flex";
+/* ============================================================
+   🔐 USER LOGIN LOGIC (index.html)
+============================================================ */
 
-    if (isAdmin) {
-        adminBadge.style.display = "inline-block";
-        adminBtn.style.display = "block";
-    }
-});
+if (isLoginPage) {
+    document.getElementById("loginBtn").onclick = async () => {
+        
+        let user = document.getElementById("usernameInput").value.trim();
+        let pass = document.getElementById("passwordInput").value.trim();
 
-/* ============================================
-   🚪 LOGOUT
-   ============================================ */
-document.getElementById("logoutBtn").addEventListener("click", () => {
-    localStorage.removeItem("username");
-    location.reload();
-});
+        if (!user || !pass) {
+            alert("Enter username & password!");
+            return;
+        }
 
-/* ============================================
-   💬 SEND MESSAGE
-   ============================================ */
-document.getElementById("sendBtn").addEventListener("click", () => {
-    let msg = document.getElementById("messageInput").value.trim();
-    if (!msg) return;
+        // CHECK BANNED USERS
+        const banData = await get(bannedRef);
+        if (banData.exists()) {
+            const banned = banData.val();
+            if (banned[user]) {
+                alert("You are BANNED by Admin.");
+                return;
+            }
+        }
 
-    push(ref(db, "messages"), {
-        username: currentUser,
-        text: msg,
-        admin: isAdmin,
-        time: Date.now()
-    });
+        localStorage.setItem("chatUser", user);
 
-    document.getElementById("messageInput").value = "";
-});
+        window.location = "chat.html";
+    };
+}
 
-/* ============================================
-   📥 RECEIVE & DISPLAY MESSAGE
-   ============================================ */
-onChildAdded(ref(db, "messages"), (snap) => {
-    let data = snap.val();
-    let id = snap.key;
+/* ============================================================
+   💬 CHAT PAGE (chat.html)
+============================================================ */
 
-    let div = document.createElement("div");
-    div.className = "message";
+if (isChatPage) {
 
-    div.innerHTML = `
-        <span class="username">${data.username}</span>
-        ${data.admin ? "<span class='admin-tag'>(ADMIN)</span>" : ""}
-        <span class="deleteBtn" data-id="${id}" style="display:none;">[delete]</span>
-        <br>${data.text}
-    `;
+    // not logged?
+    if (!currentUser) window.location = "index.html";
 
-    // Admin delete visibility
-    if (isAdmin) {
-        div.querySelector(".deleteBtn").style.display = "inline";
-    }
+    const msgBox = document.getElementById("messages");
+    const sendBtn = document.getElementById("sendBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const input = document.getElementById("messageInput");
 
-    // Delete message
-    div.querySelector(".deleteBtn").addEventListener("click", () => {
-        remove(ref(db, "messages/" + id));
-        div.remove();
-    });
+    // SEND MESSAGE
+    sendBtn.onclick = () => {
+        let txt = input.value.trim();
+        if (!txt) return;
 
-    messagesDiv.appendChild(div);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-});
-
-/* ============================================
-   ⚡ BLOCK 2 — ADMIN PANEL FEATURES
-   ============================================ */
-
-/* ========== ADMIN PANEL BUTTON ========== */
-adminBtn.addEventListener("click", () => {
-    adminPanel.style.display = "block";
-});
-
-document.getElementById("closePanel").addEventListener("click", () => {
-    adminPanel.style.display = "none";
-});
-
-/* ========== ADMIN CONTROLS ========== */
-
-// Clear All Messages
-document.getElementById("clearMessages").addEventListener("click", () => {
-    if (!isAdmin) return;
-    if (confirm("Are you sure? Clear ALL messages?")) {
-        update(ref(db), { messages: null });
-        messagesDiv.innerHTML = "";
-    }
-});
-
-// Read-Only Mode Toggle
-let readOnly = false;
-document.getElementById("readOnlyToggle").addEventListener("click", () => {
-    if (!isAdmin) return;
-    readOnly = !readOnly;
-    alert("Read-Only Mode: " + (readOnly ? "ON" : "OFF"));
-});
-
-// Global Announcement
-document.getElementById("announcementBtn").addEventListener("click", () => {
-    if (!isAdmin) return;
-    let text = prompt("Enter announcement message:");
-    if (text) {
-        push(ref(db, "messages"), {
-            username: "SYSTEM",
-            text: "📢 ANNOUNCEMENT: " + text,
-            admin: true,
+        push(messagesRef, {
+            sender: currentUser,
+            text: txt,
             time: Date.now()
         });
-    }
-});
 
-// Freeze Chat
-let freezeChat = false;
-document.getElementById("freezeBtn").addEventListener("click", () => {
-    if (!isAdmin) return;
-    freezeChat = !freezeChat;
-    alert("Freeze Chat: " + (freezeChat ? "ON" : "OFF"));
-});
+        input.value = "";
+    };
 
-// Glitch Effect
-document.getElementById("glitchBtn").addEventListener("click", () => {
-    if (!isAdmin) return;
-    document.body.classList.toggle("glitch");
-    setTimeout(() => {
-        document.body.classList.remove("glitch");
-    }, 2000);
-});
+    // DISPLAY MESSAGES
+    onChildAdded(messagesRef, snap => {
+        const m = snap.val();
 
-/* ============================================
-   🌐 BLOCK 3 — ADVANCED USER FEATURES
-   ============================================ */
+        let div = document.createElement("div");
+        div.className = "message hackerFade";
 
-/* ========== ONLINE USERS TRACKING ========== */
-const userListDiv = document.getElementById("userList");
-const usersRef = ref(db, "onlineUsers/");
+        div.innerHTML = `
+            <b>${m.sender}:</b> ${m.text}
+        `;
 
-// Mark current user online
-push(usersRef, {
-    username: currentUser,
-    time: Date.now()
-});
-
-// Listen online users
-onChildAdded(usersRef, (snap) => {
-    let data = snap.val();
-    let div = document.createElement("div");
-    div.id = "user-" + snap.key;
-    div.textContent = data.username + " (Online)";
-    userListDiv.appendChild(div);
-});
-
-// Typing indicator
-let typing = false;
-document.getElementById("messageInput").addEventListener("input", () => {
-    typing = true;
-    // Optional: broadcast typing status to other users
-    setTimeout(() => { typing = false; }, 2000);
-});
-
-/* ========== PINNED MESSAGES ========== */
-const pinnedRef = ref(db, "pinned/");
-onChildAdded(pinnedRef, (snap) => {
-    let data = snap.val();
-    let div = document.createElement("div");
-    div.className = "message";
-    div.style.border = "2px solid #ff0";
-    div.innerHTML = `<b>Pinned:</b> ${data.text}`;
-    messagesDiv.prepend(div);
-});
-
-/* ========== MESSAGE LIKES ========== */
-onChildAdded(ref(db, "messages"), (snap) => {
-    const likeBtn = document.createElement("span");
-    likeBtn.textContent = " [❤0]";
-    likeBtn.style.cursor = "pointer";
-    likeBtn.style.marginLeft = "10px";
-
-    likeBtn.addEventListener("click", () => {
-        const likesRef = ref(db, "likes/" + snap.key);
-        push(likesRef, { user: currentUser });
+        msgBox.appendChild(div);
+        msgBox.scrollTop = msgBox.scrollHeight;
     });
 
-    const msgDiv = messagesDiv.querySelector(`.message:last-child`);
-    if (msgDiv) msgDiv.appendChild(likeBtn);
-});
+    // LOGOUT
+    logoutBtn.onclick = () => {
+        localStorage.removeItem("chatUser");
+        window.location = "index.html";
+    };
+}
 
-/* ========== CHAT SOUND EFFECTS ========== */
-const msgSound = new Audio("https://freesound.org/data/previews/258/258142_4486188-lq.mp3"); // short beep
+/* ============================================================
+   🔐 ADMIN LOGIN + PANEL (admin.html)
+============================================================ */
 
-onChildAdded(ref(db, "messages"), (snap) => {
-    if (snap.val().username !== currentUser) {
-        msgSound.play();
-    }
-});
+if (isAdminPage) {
+    const adminLoginBtn = document.getElementById("adminLoginBtn");
+    const adminPanel = document.getElementById("adminPanel");
+    const banUserBtn = document.getElementById("banUserBtn");
+    const unbanUserBtn = document.getElementById("unbanUserBtn");
+    const deleteMsgBtn = document.getElementById("deleteMsgBtn");
+    const deleteAllBtn = document.getElementById("deleteAllBtn");
+    const broadcastBtn = document.getElementById("broadcastBtn");
 
-/* ========== USER STATUS LOGIC (optional) ========== */
+    // ADMIN LOGIN
+    adminLoginBtn.onclick = () => {
+        let user = document.getElementById("adminUser").value.trim();
+        let pass = document.getElementById("adminPass").value.trim();
+
+        if (user === "zerohex" && pass === "badatom2556") {
+            document.getElementById("adminLogin").classList.add("hidden");
+            adminPanel.classList.remove("hidden");
+        } else {
+            alert("Wrong admin credentials.");
+        }
+    };
+
+    /* ========== ADMIN FEATURES ========== */
+
+    // BAN USER
+    banUserBtn.onclick = async () => {
+        let user = prompt("Enter username to BAN:");
+        if (!user) return;
+
+        await set(ref(db, "bannedUsers/" + user), true);
+        alert(user + " banned!");
+    };
+
+    // UNBAN USER
+    unbanUserBtn.onclick = async () => {
+        let user = prompt("Enter username to UNBAN:");
+        if (!user) return;
+
+        await remove(ref(db, "bannedUsers/" + user));
+        alert(user + " unbanned!");
+    };
+
+    // DELETE SPECIFIC MESSAGE
+    deleteMsgBtn.onclick = async () => {
+        let id = prompt("Enter message ID to delete:");
+        if (!id) return;
+
+        await remove(ref(db, "messages/" + id));
+        alert("Message deleted!");
+    };
+
+    // DELETE ALL MESSAGES
+    deleteAllBtn.onclick = async () => {
+        if (confirm("Delete ALL messages?")) {
+            await remove(messagesRef);
+            alert("All messages deleted!");
+        }
+    };
+
+    // BROADCAST
+    broadcastBtn.onclick = () => {
+        let msg = prompt("Enter broadcast message:");
+        if (!msg) return;
+
+        push(messagesRef, {
+            sender: "ADMIN",
+            text: "[BROADCAST] " + msg,
+            time: Date.now()
+        });
+
+        alert("Broadcast sent!");
+    };
+}
+
+/* ============================================================
+   🌐 HACKER EFFECTS (animations)
+============================================================ */
+
 setInterval(() => {
-    update(ref(db, "onlineUsers/" + currentUser), { time: Date.now() });
-}, 30000); // refresh timestamp every 30s
-
-/* ========== EXTRA HACKER ANIMATION ========== */
-setInterval(() => {
-    if (Math.random() < 0.1) {
-        document.body.classList.toggle("glitch");
-        setTimeout(() => document.body.classList.remove("glitch"), 500);
-    }
-}, 5000);
+    document.body.style.filter = "hue-rotate(" + (Math.random() * 10) + "deg)";
+}, 200);
