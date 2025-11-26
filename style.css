@@ -1,165 +1,172 @@
+/* ==================================================
+   GLOBAL HACKER MATRIX BACKGROUND
+================================================== */
 body {
-    background: #000;
-    color: #0f0;
-    font-family: "Courier New", monospace;
     margin: 0;
-}
-
-/* LOGIN BOX */
-.centerBox {
-    width: 280px;
-    margin: 120px auto;
-    background: rgba(0,255,0,0.05);
-    padding: 20px;
-    border: 1px solid #0f0;
-    text-align: center;
-}
-
-.centerBox input {
-    width: 90%;
-    padding: 10px;
-    margin: 8px;
+    padding: 0;
+    font-family: 'Courier New', monospace;
     background: black;
-    border: 1px solid #0f0;
-    color: #0f0;
+    color: #00ff9d;
+    overflow-x: hidden;
+    animation: bgPulse 5s infinite alternate;
 }
 
-.centerBox button {
-    width: 95%;
-    padding: 10px;
-    background: #0f0;
-    color: #000;
-    border: none;
-    cursor: pointer;
+@keyframes bgPulse {
+    0% { background-color: #000; }
+    100% { background-color: #020f0a; }
 }
 
-/* CHAT LAYOUT */
-#chatContainer {
-    display: none;
-    height: 100vh;
-    display: flex;
-}
-
-/* SIDEBAR */
-#sidebar {
-    width: 220px;
-    background: #050;
-    padding: 15px;
-    border-right: 2px solid #0f0;
-}
-
-#sidebar h3 {
-    margin-top: 0;
-}
-
-#userList div {
-    padding: 5px 0;
-}
-
-/* DANGER BTN */
-.danger {
-    margin-top: 20px;
+/* ==================================================
+   MATRIX RAIN EFFECT
+================================================== */
+body::before {
+    content: "010101110101001101010";
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    background: red;
-    color: white;
-    padding: 10px;
-    border: none;
+    height: 100%;
+    color: rgba(0,255,100,0.1);
+    font-size: 18px;
+    line-height: 18px;
+    overflow: hidden;
+    pointer-events: none;
+    animation: matrixRain 20s linear infinite;
 }
 
-/* MAIN CHAT */
-#mainChat {
-    flex: 1;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
+@keyframes matrixRain {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
 }
 
-.title {
-    text-align: center;
-    margin: 5px 0;
-    color: #0f0;
+/* ==================================================
+   CENTERED BOX STYLE (LOGIN, ADMIN)
+================================================== */
+.box {
+    width: 350px;
+    margin: 120px auto;
+    padding: 25px;
+    border: 2px solid #00ffcc;
+    border-radius: 10px;
+    background: rgba(0, 40, 20, 0.4);
+    backdrop-filter: blur(6px);
+    animation: fadeUp 1.3s ease;
+    box-shadow: 0 0 20px #00ffbf;
 }
 
-/* PINNED BOX */
-#pinnedBox div {
-    background: #222;
-    border-left: 4px solid yellow;
-    padding: 8px;
-    margin-bottom: 10px;
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(25px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
-/* MESSAGES */
+input {
+    width: 100%;
+    padding: 12px;
+    background: #001a0f;
+    border: 1px solid #00ffaa;
+    color: #00ffbf;
+    margin: 8px 0;
+    border-radius: 5px;
+    outline: none;
+    box-shadow: 0 0 10px #004f39 inset;
+    transition: 0.3s;
+}
+
+input:focus {
+    border-color: #00ffe1;
+    box-shadow: 0 0 20px #00ffe1 inset;
+}
+
+/* ==================================================
+   BUTTON STYLES WITH GLITCH
+================================================== */
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background: black;
+    color: #00ffcc;
+    border: 2px solid #00ffcc;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: 0.2s;
+}
+
+button:hover {
+    box-shadow: 0 0 18px #00ffaa;
+}
+
+button::before {
+    content: "";
+    position: absolute;
+    top: -4px; left: -4px;
+    width: calc(100% + 8px);
+    height: calc(100% + 8px);
+    border: 2px dashed #00ffcc;
+    opacity: 0;
+    animation: glitch 1.2s infinite;
+}
+
+@keyframes glitch {
+    0% { opacity: 0; }
+    50% { opacity: 1; transform: translate(3px, -3px); }
+    100% { opacity: 0; }
+}
+
+/* ==================================================
+   CHAT PAGE
+================================================== */
+.chat-container {
+    width: 90%;
+    margin: 40px auto;
+    padding: 20px;
+    background: rgba(0, 20, 10, 0.6);
+    border: 2px solid #00ffcc;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #00ffbf;
+    animation: fadeUp 1.5s ease;
+}
+
 #messages {
-    flex: 1;
+    height: 65vh;
     overflow-y: auto;
-    border: 1px solid #0f0;
     padding: 10px;
+    border: 1px solid #00ffcc;
+    background: rgba(0, 40, 20, 0.3);
+    box-shadow: inset 0 0 15px #00664a;
 }
 
 .message {
-    background: rgba(0,255,0,0.05);
+    margin: 10px 0;
     padding: 8px;
-    margin: 6px 0;
-    border-bottom: 1px solid #0f0;
+    border-left: 3px solid #00ffa6;
+    animation: msgFade 0.8s ease;
 }
 
-/* INPUT */
-#inputArea {
+@keyframes msgFade {
+    from { opacity: 0; transform: translateX(-15px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ==================================================
+   SEND AREA
+================================================== */
+.sendBox {
     display: flex;
-    margin-top: 10px;
+    gap: 10px;
+    margin-top: 15px;
 }
 
-#messageInput {
+.sendBox input {
     flex: 1;
-    padding: 10px;
-    background: black;
-    border: 1px solid #0f0;
-    color: #0f0;
 }
 
-#sendBtn {
-    padding: 10px 20px;
-    background: #0f0;
-    color: black;
-    border: none;
-    cursor: pointer;
-}
-
-/* ADMIN PANEL BOX */
-.adminBox {
-    position: fixed;
-    width: 350px;
-    background: #020;
-    border: 2px solid #0f0;
-    top: 50px;
-    right: 50px;
-    padding: 20px;
-}
-
-.adminBtn {
-    width: 100%;
-    margin: 8px 0;
-    padding: 10px;
-    background: black;
-    color: #0f0;
-    border: 1px solid #0f0;
-}
-
-.closeBtn {
-    margin-top: 10px;
-    background: red;
-    color: white;
-    padding: 10px;
-    width: 100%;
-    border: none;
-}
-
-/* HIDING CLASS */
+/* ==================================================
+   HIDE CLASS
+================================================== */
 .hidden {
     display: none;
-}
-
-/* GLITCH EFFECT */
-body.glitch {
-    filter: hue-rotate(90deg);
 }
